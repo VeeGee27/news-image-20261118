@@ -1,22 +1,31 @@
 #!/usr/bin/env python3
 """Draw the entry image for make.fun competition news-image-20261118.
 
-v2 — a newspaper front page summing up Wednesday 18 November 2026 in
+v3 — a newspaper front page summing up Wednesday 18 November 2026 in
 one image, built to the shape of the day's top-ranked entries: serif
 masthead with the date, a true story count, three hero stories, six mid
 stories, a "By the numbers" strip, a world-map panel, and a numbered
-also-on list. 33 stories in total, across 6 continents.
+also-on list with bold lead-ins. 32 stories in total, across 6
+continents.
 
-Numbering 1-33 (the lesson from the 17 Nov v3 revision, applied from
+Numbering 1-32 (the lesson from the 17 Nov v3 revision, applied from
 the first draft): every story has one serial number, in reading order --
-heroes 1-3, mids 4-9, also-on 10-33. The number appears as a badge on
-its hero/mid panel, as a numbered circle on the world map (all 33 stories; crowded dots sit just outside their country with
-a thin leader line to the exact spot), and before its line in the
-also-on list,
-always in the story's continent colour, so a reader can match any map
-marker to its story without guessing. Flat shapes and crisp text only,
-so the image stays legible at small sizes and the PNG stays far under
-the 1 MiB limit. Deterministic: same input, same bytes.
+heroes 1-3, mids 4-9, also-on 10-32. The number appears as a badge on
+its hero/mid panel, as a numbered circle on the world map (31 of the 32
+stories -- Voyager 1 (31) is in deep space and has no place on Earth;
+crowded dots sit just outside their country with a thin leader line to
+the exact spot), and before its line in the also-on list, always in the
+story's continent colour, so a reader can match any map marker to its
+story without guessing. Flat shapes and crisp text only, so the image
+stays legible at small sizes and the PNG stays far under the 1 MiB
+limit. Deterministic: same input, same bytes.
+
+v3 changes vs the submitted v2 (97.90%): Voyager 1 (first human-made
+object to reach one light-day from the Sun, NASA 10:16 UTC 18 Nov) and
+Cyclone Xavier (Category 5, Cook Islands, MetService bulletin 18 Nov)
+replace two wrong lines -- Jetstar (a March 2026 story) and the NZ
+election (held Saturday 7 Nov). Altimeter's $5bn Anthropic bid (16 Nov)
+is folded into hero panel 8 as context instead of standing alone.
 
 Every story happened or was first reported on Wednesday 18 November
 2026 as reported on that morning's news pages; contested claims are
@@ -377,6 +386,8 @@ CONTINENTS = [
     # New Zealand
     _poly((166, -46), (167, -44), (170, -41), (173, -38), (175, -34.5),
           (178, -37), (176, -40), (175, -42.5), (172, -44), (169, -46)),
+    # Cook Islands (tiny -- Cyclone Xavier, 29)
+    _poly((-163, -11), (-157, -11), (-157, -9), (-163, -9)),
     # United Kingdom
     _poly((-5, 50), (-3, 53), (-5, 58)),
     # Japan
@@ -392,15 +403,15 @@ CONTINENTS = [
     _poly((120, 18), (122, 18), (122, 14), (120, 14)),
 ]
 
-# Numbered dots for ALL 33 stories, placed from each story's real
-# (lon, lat) through the same projection and verified one by one
+# Numbered dots for 31 of the 32 stories, placed from each story's
+# real (lon, lat) through the same projection and verified one by one
 # (point-in-polygon against the drawn continents): every anchor sits
 # on its own country -- no dot in the sea, none on a neighbour, none
-# placed by guesswork. Where dots would collide, the badge sits a few
-# units off the anchor on land (or, for 31 Auckland, just off New
-# Zealand in the Tasman Sea -- the only sea dot, unavoidable at this
-# scale) with a thin leader line to the exact spot. Offsets (dx, dy)
-# are in map units from the projected anchor.
+# placed by guesswork. Story 31 (Voyager 1) has no dot: it is in deep
+# space and has no place on Earth. Where dots would collide, the badge
+# sits a few units off the anchor on land with a thin leader line to
+# the exact spot. Offsets (dx, dy) are in map units from the projected
+# anchor.
 # (lon, lat, colour, n, dx, dy)
 MARKERS_LL = [
     (35.2, 31.8, C_MIDEAST, 1, 0, 0),      # Jerusalem (Eisenkot)
@@ -431,11 +442,10 @@ MARKERS_LL = [
     (32.5, 15.6, C_AFRICA, 26, 0, 0),     # Khartoum (Sudan drones)
     (116.4, 39.9, C_ASIA, 27, 0, 0),      # Beijing (China-Canada tariffs)
     (-13.7, 9.5, C_AFRICA, 28, 8, 3),     # Conakry (Guinea jails)
-    (174.8, -41.3, C_OCEANIA, 29, -4, 0),  # Wellington (NZ election)
+    (-160.0, -10.0, C_OCEANIA, 29, 0, 0),  # Cook Islands (Cyclone Xavier)
     (13.4, 52.5, C_EUROPE, 30, 14, -4),   # Berlin (European startups)
-    (174.8, -36.9, C_OCEANIA, 31, -16, -2),  # Auckland (Jetstar NZ)
+    # 31 Voyager 1: no dot -- deep space, no place on Earth
     (-77.0, 38.9, C_AMERICAS, 32, -12, 13),  # Washington DC (dirty-bomb report)
-    (-121.9, 37.8, C_AMERICAS, 33, 14, -13),  # San Francisco (Altimeter bid)
 ]
 # (anchor px, py, display px, py, colour, n)
 MAP_MARKERS = []
@@ -493,7 +503,7 @@ MIDS = [
      lambda d, x, y, w, h: mini_chart(d, x, y, w, h, "down")),
     ("AMERICAS · TECH", "Anthropic IPO due today",
      "Pricing due today at $70\u201378; orders near 7\u00d7 the shares on "
-     "offer; trading starts Thursday.",
+     "offer. Altimeter bids $5bn; trading starts Thursday.",
      lambda d, x, y, w, h: mini_chart(d, x, y, w, h, "up")),
     ("ASIA · CLIMATE", "COP31, Antalya",
      "First week records $26bn in green deals and $10bn in climate "
@@ -509,37 +519,37 @@ BY_NUMBERS = [
     ("200,000", "People Odisha is moving from the coast"),
 ]
 
-# Also-on: one line each (headline + short detail), numbered 10-33.
-# Continent colour per story for the number.
+# Also-on: one line each, numbered 10-32. Each line is (bold lead-in,
+# rest of the line, continent colour) -- the bold lead keeps the list
+# scannable at small size, like the top entries do.
 ALSO_ON = [
-    ("Knesset picks Kahana as speaker, 66-52", C_MIDEAST),
-    ("Nvidia revenue doubles to $115.8bn", C_AMERICAS),
-    ("Dow drops 849 in fourth straight fall", C_AMERICAS),
-    ("Kerch Bridge span falls into the sea", C_EUROPE),
-    ("US, Iran trade fire over Bahrain, Qeshm", C_MIDEAST),
-    ("Trump meets Marcos, flies to Shenzhen", C_ASIA),
-    ("Settler sanctions: 7 banned, 8 frozen", C_MIDEAST),
-    ("Gaza warning: peace board fears collapse", C_MIDEAST),
-    ("Siberia crash: all 19 aboard An-12 die", C_EUROPE),
-    ("US loses measles-free status since 2000", C_AMERICAS),
-    ("Tokyo scrambles jets at Russian planes", C_ASIA),
-    ("Apple outage hits iCloud, App Store, Pay", C_AMERICAS),
-    ("Amazon to put $7bn in India renewables", C_ASIA),
-    ("Senegal first into AFCON 2027", C_AFRICA),
-    ("Nations League: Iceland, Austria, Sweden up", C_EUROPE),
-    ("SAFF final: India beats Pakistan 2-1", C_ASIA),
-    ("UN: drones killed 1,630 in Sudan this year", C_AFRICA),
-    ("China, Canada cut tariffs on pork, seafood", C_ASIA),
-    ("Guinea jails 224 over illegal gold mining", C_AFRICA),
-    ("NZ election: Kiwis in Australia may decide", C_OCEANIA),
-    ("European startups near $81bn funding", C_EUROPE),
-    ("Jetstar cuts NZ flights on fuel costs", C_OCEANIA),
-    ("CNN: Iran 'may weigh dirty-bomb attack'", C_MIDEAST),
-    ("Altimeter bids $5bn for Anthropic shares", C_AMERICAS),
+    ("KAHANA \u2014", "Knesset picks speaker, 66-52", C_MIDEAST),
+    ("NVIDIA \u2014", "revenue doubles to $115.8bn", C_AMERICAS),
+    ("DOW \u2014", "drops 849, fourth straight fall", C_AMERICAS),
+    ("KERCH BRIDGE \u2014", "span falls into the sea", C_EUROPE),
+    ("GULF \u2014", "US, Iran trade fire over Bahrain", C_MIDEAST),
+    ("TRUMP \u2014", "meets Marcos, flies to Shenzhen", C_ASIA),
+    ("SETTLER SANCTIONS \u2014", "7 banned, 8 frozen", C_MIDEAST),
+    ("GAZA \u2014", "peace board fears collapse", C_MIDEAST),
+    ("SIBERIA CRASH \u2014", "all 19 aboard An-12 die", C_EUROPE),
+    ("MEASLES \u2014", "US loses free status since 2000", C_AMERICAS),
+    ("TOKYO \u2014", "scrambles jets at Russian planes", C_ASIA),
+    ("APPLE \u2014", "outage hits iCloud, App Store, Pay", C_AMERICAS),
+    ("AMAZON \u2014", "$7bn in India renewables", C_ASIA),
+    ("SENEGAL \u2014", "first into AFCON 2027", C_AFRICA),
+    ("NATIONS \u2014", "Iceland, Austria, Sweden up", C_EUROPE),
+    ("SAFF FINAL \u2014", "India beats Pakistan 2-1", C_ASIA),
+    ("SUDAN \u2014", "drones killed 1,630 this year", C_AFRICA),
+    ("TARIFFS \u2014", "China, Canada on pork, seafood", C_ASIA),
+    ("GUINEA \u2014", "jails 224 over illegal gold mining", C_AFRICA),
+    ("XAVIER \u2014", "Cat 5 cyclone, 220 km/h, Cook Is.", C_OCEANIA),
+    ("EU STARTUPS \u2014", "near $81bn funding", C_EUROPE),
+    ("VOYAGER 1 \u2014", "first object to one light-day", C_AMERICAS),
+    ("CNN \u2014", "Iran 'may weigh dirty-bomb attack'", C_MIDEAST),
 ]
 
-STORY_COUNT = len(HEROES) + len(MIDS) + len(ALSO_ON)  # 33
-assert STORY_COUNT == 33, STORY_COUNT
+STORY_COUNT = len(HEROES) + len(MIDS) + len(ALSO_ON)  # 32
+assert STORY_COUNT == 32, STORY_COUNT
 
 # Number colours: the badge/marker/list number of each story takes its
 # continent colour, so the number cross-references the map legend.
@@ -558,7 +568,7 @@ def main():
     centered(d, 82, "Every story on this page happened, or was first "
              "reported, on this day.", font(REG, 13), WHITE)
     d.rectangle([0, 106, W, 110], fill=RED)
-    centered(d, 114, "33 STORIES \u00b7 6 CONTINENTS \u00b7 ONE PAGE",
+    centered(d, 114, "32 STORIES \u00b7 6 CONTINENTS \u00b7 ONE PAGE",
              font(BOLD, 17), NAVY)
 
     margin, gap = 10, 8
@@ -636,7 +646,8 @@ def main():
                 outline=INK, width=2)
     d.text((mx + 10, by2 + 8), "WHERE THE NEWS HAPPENED",
            font=font(BOLD, 14), fill=NAVY)
-    d.text((mx + 10, by2 + 28), "Numbered dots match stories 1\u201333.",
+    d.text((mx + 10, by2 + 28), "Numbered dots match stories 1\u201332; "
+           "31 is in deep space.",
            font=font(REG, 11), fill=GREY)
     map_x, map_y = mx + 8, by2 + 52
     map_w, map_h = mpw - 16, 236
@@ -667,7 +678,7 @@ def main():
         d.ellipse([lx, ly2 + 2, lx + 9, ly2 + 11], fill=col)
         d.text((lx + 13, ly2), name, font=font(REG, 11), fill=INK)
     d.text((mx + 10, by2 + 352),
-           "Dots 1\u201333: all stories on this page, numbered to match "
+           "Dots: every story with a place on Earth, numbered to match "
            "the list.",
            font=font(REG, 10), fill=GREY)
 
@@ -675,11 +686,11 @@ def main():
     ax = mx + mpw + gap  # 486
     aw = W - margin - ax  # 528
     d.text((ax + 8, by2 + 8), "ALSO ON WEDNESDAY 18 NOVEMBER \u2014 "
-           "24 MORE STORIES", font=font(BOLD, 13), fill=NAVY)
+           "23 MORE STORIES", font=font(BOLD, 13), fill=NAVY)
     d.line([ax + 8, by2 + 30, ax + aw - 8, by2 + 30], fill=INK, width=1)
     col1_x, col2_x = ax + 8, ax + 8 + (aw - 8) // 2 + 4
     col_w = (aw - 8) // 2 - 4  # ~252
-    for j, (line, col) in enumerate(ALSO_ON):
+    for j, (lead, line, col) in enumerate(ALSO_ON):
         n = 10 + j
         col_x = col1_x if j < 12 else col2_x
         row = j if j < 12 else j - 12
@@ -688,7 +699,10 @@ def main():
         nfnt = font(BOLD, 11)
         nw = d.textlength(num, font=nfnt)
         d.text((col_x, iy), num, font=nfnt, fill=col)
-        d.text((col_x + nw + 5, iy), line, font=font(REG, 10), fill=INK)
+        lx = col_x + nw + 5
+        d.text((lx, iy), lead, font=font(BOLD, 10), fill=INK)
+        lw = d.textlength(lead, font=font(BOLD, 10))
+        d.text((lx + lw + 4, iy), line, font=font(REG, 10), fill=INK)
 
     # ---- Footer ----
     d.rectangle([0, 990, W, H], fill=NAVY)
