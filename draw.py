@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Draw the entry image for make.fun competition news-image-20261118.
 
-v3 — a newspaper front page summing up Wednesday 18 November 2026 in
-one image, built to the shape of the day's top-ranked entries: serif
+v4 (FINAL rebuild, after the day closed 2026-11-19 07:00 WIB) — a
+newspaper front page summing up Wednesday 18 November 2026 in one
+image, built to the shape of the day's top-ranked entries: serif
 masthead with the date, a true story count, three hero stories, six mid
 stories, a "By the numbers" strip, a world-map panel, and a numbered
 also-on list with bold lead-ins. 32 stories in total, across 6
@@ -26,6 +27,23 @@ Cyclone Xavier (Category 5, Cook Islands, MetService bulletin 18 Nov)
 replace two wrong lines -- Jetstar (a March 2026 story) and the NZ
 election (held Saturday 7 Nov). Altimeter's $5bn Anthropic bid (16 Nov)
 is folded into hero panel 8 as context instead of standing alone.
+
+v4 changes vs the submitted v3 (98.29%, rank 143): Anthropic PRICED
+at $83 (Reuters/Bloomberg, above the $70-78 range, ~$1.5tn fully
+diluted, trading Thu as ANT) -- the "due today" caption is now stale.
+Akvan: landfall track revised 18 Nov to Narsapur-Puri; Odisha figure
+corrected to 204,070 identified for evacuation. Also-on swaps, all
+verified genuinely 18 Nov: Peltola (AP called 03:27 UTC 18 Nov, first
+Alaska Native in the Senate, Dems 56-44) replaces Kahana (17 Nov);
+Binance eyes five Asian markets (Reuters 07:40Z) replaces the SAFF
+final (17 Nov); Tencent Q3 +8% replaces Sudan (17 Nov report);
+Ethiopia-Eritrea troops mass at the border (Reuters 11:11Z 18 Nov)
+replaces the CNN dirty-bomb line (16 Nov). Trump line folds in the
+$5bn Philippines arms deal (Reuters 03:45Z). Glastonbury was dropped
+as a swap: the simplified map draws no UK polygon, so its anchor
+would float at sea -- every marker must sit on land. Excluded as
+traps: Waymo freeway halt (DMV order 11 Nov, public 17 Nov),
+Trump-Thailand deal (signed 17 Nov), Gaza aid call (15 Nov).
 
 Every story happened or was first reported on Wednesday 18 November
 2026 as reported on that morning's news pages; contested claims are
@@ -423,7 +441,7 @@ MARKERS_LL = [
     (121.0, 23.7, C_ASIA, 7, 0, 0),       # Taiwan
     (-121.9, 37.8, C_AMERICAS, 8, 0, 0),   # San Francisco (Anthropic)
     (30.7, 36.9, C_ASIA, 9, -7, 0),       # Antalya (COP31)
-    (35.2, 31.8, C_MIDEAST, 10, 11, -12),  # Jerusalem (Knesset/Kahana)
+    (-149.9, 61.2, C_AMERICAS, 10, 0, 0),  # Anchorage (Peltola, Alaska)
     (-121.6, 37.35, C_AMERICAS, 11, -2, -15),  # Santa Clara (Nvidia)
     (-74.0, 40.7, C_AMERICAS, 12, 0, 0),   # New York (Dow)
     (36.5, 45.3, C_EUROPE, 13, 9, -5),    # Kerch Bridge
@@ -438,14 +456,14 @@ MARKERS_LL = [
     (77.0, 22.0, C_ASIA, 22, -8, -4),     # central India (Amazon renewables)
     (-17.5, 14.7, C_AFRICA, 23, 0, 0),    # Senegal (AFCON)
     (16.4, 48.2, C_EUROPE, 24, 0, 0),     # Vienna (Nations League)
-    (77.2, 28.6, C_ASIA, 25, 0, -8),      # Delhi (SAFF final)
-    (32.5, 15.6, C_AFRICA, 26, 0, 0),     # Khartoum (Sudan drones)
+    (103.8, 1.35, C_ASIA, 25, 8, -8),     # Singapore (Binance Asia)
+    (116.4, 39.9, C_ASIA, 26, 16, -12),   # Beijing (Tencent; badge offset, #27 also Beijing)
     (116.4, 39.9, C_ASIA, 27, 0, 0),      # Beijing (China-Canada tariffs)
     (-13.7, 9.5, C_AFRICA, 28, 8, 3),     # Conakry (Guinea jails)
     (-160.0, -10.0, C_OCEANIA, 29, 0, 0),  # Cook Islands (Cyclone Xavier)
     (13.4, 52.5, C_EUROPE, 30, 14, -4),   # Berlin (European startups)
     # 31 Voyager 1: no dot -- deep space, no place on Earth
-    (-77.0, 38.9, C_AMERICAS, 32, -12, 13),  # Washington DC (dirty-bomb report)
+    (37.9, 14.7, C_AFRICA, 32, 0, 0),     # Badme (Ethiopia-Eritrea border)
 ]
 # (anchor px, py, display px, py, colour, n)
 MAP_MARKERS = []
@@ -494,16 +512,15 @@ MIDS = [
      "Vrancea region, 00:48 UTC, deep at about 131 km.",
      lambda d, x, y, w, h: mini_quake(d, x, y, w, h)),
     ("SOUTH ASIA · WEATHER", "Cyclone Akvan bears down",
-     "Landfall due Friday, gusts 145 km/h; Odisha moves 200,000 people "
-     "from the coast.",
+     "Landfall due Friday; Odisha lines up 204,000 evacuations.",
      lambda d, x, y, w, h: mini_cyclone(d, x, y, w, h)),
     ("ASIA · MARKETS", "Taiwan stocks below 40,000",
      "Index falls to a low of 39,260 as the NT dollar weakens past 33; "
      "the state stabilisation fund steps in.",
      lambda d, x, y, w, h: mini_chart(d, x, y, w, h, "down")),
-    ("AMERICAS · TECH", "Anthropic IPO due today",
-     "Pricing due today at $70\u201378; orders near 7\u00d7 the shares on "
-     "offer. Altimeter bids $5bn; trading starts Thursday.",
+    ("AMERICAS · TECH", "Anthropic prices IPO at $83",
+     "Priced above the $70\u201378 range; about $1.5tn value. "
+     "Trading starts Thursday (ANT).",
      lambda d, x, y, w, h: mini_chart(d, x, y, w, h, "up")),
     ("ASIA · CLIMATE", "COP31, Antalya",
      "First week records $26bn in green deals and $10bn in climate "
@@ -516,19 +533,19 @@ BY_NUMBERS = [
     ("67\u201346", "Eisenkot's margin over Netanyahu"),
     ("\u20ac45bn", "EU loan proposed for Ukraine"),
     ("145 km/h", "Akvan's forecast gusts"),
-    ("200,000", "People Odisha is moving from the coast"),
+    ("204,000", "People Odisha may evacuate"),
 ]
 
 # Also-on: one line each, numbered 10-32. Each line is (bold lead-in,
 # rest of the line, continent colour) -- the bold lead keeps the list
 # scannable at small size, like the top entries do.
 ALSO_ON = [
-    ("KAHANA \u2014", "Knesset picks speaker, 66-52", C_MIDEAST),
+    ("PELTOLA \u2014", "first Alaska Native in Senate", C_AMERICAS),
     ("NVIDIA \u2014", "revenue doubles to $115.8bn", C_AMERICAS),
     ("DOW \u2014", "drops 849, fourth straight fall", C_AMERICAS),
     ("KERCH BRIDGE \u2014", "span falls into the sea", C_EUROPE),
     ("GULF \u2014", "US, Iran trade fire over Bahrain", C_MIDEAST),
-    ("TRUMP \u2014", "meets Marcos, flies to Shenzhen", C_ASIA),
+    ("TRUMP \u2014", "meets Marcos, $5bn arms deal", C_ASIA),
     ("SETTLER SANCTIONS \u2014", "7 banned, 8 frozen", C_MIDEAST),
     ("GAZA \u2014", "peace board fears collapse", C_MIDEAST),
     ("SIBERIA CRASH \u2014", "all 19 aboard An-12 die", C_EUROPE),
@@ -538,14 +555,14 @@ ALSO_ON = [
     ("AMAZON \u2014", "$7bn in India renewables", C_ASIA),
     ("SENEGAL \u2014", "first into AFCON 2027", C_AFRICA),
     ("NATIONS \u2014", "Iceland, Austria, Sweden up", C_EUROPE),
-    ("SAFF FINAL \u2014", "India beats Pakistan 2-1", C_ASIA),
-    ("SUDAN \u2014", "drones killed 1,630 this year", C_AFRICA),
+    ("BINANCE \u2014", "eyes five Asian markets", C_ASIA),
+    ("TENCENT \u2014", "Q3 revenue +8%, below hopes", C_ASIA),
     ("TARIFFS \u2014", "China, Canada on pork, seafood", C_ASIA),
     ("GUINEA \u2014", "jails 224 over illegal gold mining", C_AFRICA),
     ("XAVIER \u2014", "Cat 5 cyclone, 220 km/h, Cook Is.", C_OCEANIA),
     ("EU STARTUPS \u2014", "near $81bn funding", C_EUROPE),
     ("VOYAGER 1 \u2014", "first object to one light-day", C_AMERICAS),
-    ("CNN \u2014", "Iran 'may weigh dirty-bomb attack'", C_MIDEAST),
+    ("ETHIOPIA \u2014", "Eritrea troops mass at border", C_AFRICA),
 ]
 
 STORY_COUNT = len(HEROES) + len(MIDS) + len(ALSO_ON)  # 32
